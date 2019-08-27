@@ -31,6 +31,7 @@ router.post('/:db', upload.single("table"), (req, res)=>{
     name:req.params.db,
     data:fs.readFileSync(target)
   });
+  fs.unlinkSync(target);
   return res.status(result.error?400:200).send(result);
 })
 
