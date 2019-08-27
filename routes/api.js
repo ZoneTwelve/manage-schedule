@@ -15,17 +15,13 @@ const fs = require("fs");
 router.get('/', (req, res)=>{
   res.send("RESTful API");
 })
+
+// 取得資料
 router.get('/:db', (req, res)=>{ 
-  if(req.query.review==="1")
-    return res.json()
   return res.json(manage.get(req.params.db));
-  //console.log(manage.path);
-  //console.log(manage.get);
-  //res.send(req.params.db+".csv");
 });
 
 router.post('/:db', upload.single("table"), (req, res)=>{
-  console.log(req.file);
   let target = req.file.path;
   let result = manage.add({
     name:req.params.db,
@@ -41,9 +37,6 @@ router.put('/:db', (req, res)=>{
 });
 
 router.delete('/:db', (req, res)=>{
-  //console.log('when delete', req.params.db); 
-  //console.log(manage.delete);
-  console.log("delete", req.params.db);
   let result = (manage.remove(req.params.db));
   res.status(result.error?403:200).send(result);
 });
@@ -51,17 +44,17 @@ router.delete('/:db', (req, res)=>{
 // feature: restrict access
 // use access token to get passport
 router.get("/access/:token", (req, res)=>{
-  
+  //取得存取權限 session
 });
 
 // add new access token
 router.post("/access/:token", (req, res)=>{
-  
+  //新增存取權杖
 });
 
 // delete access token
 router.delete("/access/:token", (req, res)=>{
-
+  //刪除存取權杖
 });
 
 module.exports = router;

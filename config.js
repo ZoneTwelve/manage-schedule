@@ -1,5 +1,6 @@
 module.exports = {
-	"模式":"public"||"private",
+	"title":"值班人員工作日誌",
+  "模式":"public"||"private",
 	"時效":"毫秒",
 	"重複性":"number :: 0 => 無限制",
 	"管理密碼":"sha256(md5(pwd))",

@@ -1,0 +1,13 @@
+body{
+  margin: 0px auto;
+}
+
+#main-title{
+  color:#D3D3D3;
+  background:#3C3C3C;
+}
+.title{
+  width:100%;
+  text-align:center;
+  padding: 1px 0px;
+}
