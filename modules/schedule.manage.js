@@ -19,14 +19,19 @@ main.prototype.get = function( name ){
   if(filepath==null||!fs.existsSync(filepath))
     return {error:"file is not exist or not allow"};
   let tmp = this.cache.find(obj=>obj.name==name);
-  if(tmp!=undefined)
+  if(tmp!=undefined){
+    tmp.time = Number(new Date());
     return tmp;
+  }
+  let table = this.read(filepath);
   let result = {
     name:name,
-    data:this.read(filepath),
-    time:Number(new Date())
+    subject:table.subject,
+    data:table.data,
+    cache:Number(new Date())
   };
   this.cache.push(result);
+  result.time = Number(new Date());
   return result;
 }
 
@@ -41,7 +46,7 @@ main.prototype.read = function( filepath ){
     });
     return object;
   })
-  return data;
+  return {subject:subject, data:data};
 }
 
 // POST API
