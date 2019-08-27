@@ -17,6 +17,10 @@ router.get('/', (req, res)=>{
 })
 
 // 取得資料
+router.get('/list', (req, res)=>{
+  console.log(manage);
+  res.json(manage.list);
+})
 router.get('/:db', (req, res)=>{ 
   return res.json(manage.get(req.params.db));
 });

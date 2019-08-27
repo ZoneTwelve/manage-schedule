@@ -1,8 +1,16 @@
+var list;
 window.onload = function(){
-  load("example");
+  request("list", (db)=>{
+    list = db;
+    load(db[0]);
+    for(let option of db)
+      document.querySelector("#selector").appendChild(createElement("option", {onclick:load, value:option, innerText:option}));
+  })
 }
 
 function load(name){
+  if(typeof name!="string")
+    name = this.value;
   request(name, (db)=>{
     setup(db);
   })
@@ -22,7 +30,7 @@ function setup(db){
   for(let content of db.data){
     let tbody = createElement("tr");
     for(let el of Object.keys(content))
-      tbody.appendChild(createElement("td", content[el], {
+      tbody.appendChild(createElement("td", {innerText:content[el]}, {
         "color":"black"
       }));
     document.querySelector("#schedule>table>tbody").appendChild(tbody);
@@ -30,12 +38,15 @@ function setup(db){
 
   document.querySelector("#schedule>table>thead").appendChild(thead);
 }
-function createElement(tag, content = "", setting = {}){
+
+function createElement(tag, content = {}, setting = {}){
   let el = document.createElement(tag);
-  el.innerText = content;
   for(let set of Object.keys(setting)){
     el['style'][set] = setting[set];
-  };
+  }
+  for(let set of Object.keys(content)){
+    el[set] = content[set];
+  }
   return el;
 }
 
