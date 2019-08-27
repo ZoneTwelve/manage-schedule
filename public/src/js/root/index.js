@@ -3,8 +3,13 @@ window.onload = function(){
   request("list", (db)=>{
     list = db;
     load(db[0]);
+    document.querySelector("#selector").onchange = function(){
+      load(this.value);
+    }
     for(let option of db)
-      document.querySelector("#selector").appendChild(createElement("option", {onclick:load, value:option, innerText:option}));
+      document.querySelector("#selector").appendChild(
+        createElement("option", {value:option, innerText:option})
+      );
   })
 }
 
@@ -22,17 +27,12 @@ function setup(db){
   document.querySelector("#schedule>table>tbody").innerHTML="";
   let thead = createElement("tr");
   for(let c of db.subject){
-    thead.appendChild(createElement("td", c, {
-      "background":"black",
-      "color":"white"
-    }));
+    thead.appendChild(createElement("td", {innerText:c}));
   }
   for(let content of db.data){
     let tbody = createElement("tr");
     for(let el of Object.keys(content))
-      tbody.appendChild(createElement("td", {innerText:content[el]}, {
-        "color":"black"
-      }));
+      tbody.appendChild(createElement("td", {innerText:content[el]}));
     document.querySelector("#schedule>table>tbody").appendChild(tbody);
   }
 
