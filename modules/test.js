@@ -1,3 +1,9 @@
 var manage = require("./schedule.manage");
 
-console.log(new manage(__dirname, "../public/document"));
+let system = (new manage({
+  root:__dirname, 
+  db:"../public/document"
+  temp:"../public/temp"    
+}));
+
+system.check("update");
