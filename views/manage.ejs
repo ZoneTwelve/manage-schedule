@@ -34,12 +34,23 @@
 <div class="container">
   <h1>系統設定</h1>
   <h2>系統管理密碼設定</h2>
-  <form method="POST" action="/system">
+  <form method="POST" action="/passwd">
     <p>舊密碼: <input type="password" name="opwd" placeholder="舊密碼"></p>
     <p>新管理密碼: <input type="password" name="pwd" placeholder="新密碼"></p>
     <p>確認密碼: <input type="password" name="cpwd" placeholder="確認新密碼"></p>
     <input type="submit" value="修改">
   </form>
+  <hr>
+  <form method="POST" action="/rename">
+    <p>系統名稱: <input type="text" name="name" placeholder="新名稱"></p>
+    <p>管理密碼: <input type="password" name="pwd" placeholder="password"></p>
+    <input type="submit">
+  </form>
+</div>
+<hr>
+<div class="container">
+  <h1>授權管理</h1>
+  <h2>生成新的權限金鑰</h2>
 </div>
 <script src="src/js/root/manage.js"></script>
 </body>

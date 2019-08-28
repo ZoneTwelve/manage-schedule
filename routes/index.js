@@ -31,7 +31,7 @@ router.post('/manage', (req, res)=>{
   return res.render("login", {message:"wrong password"});
 });
 
-router.post('/system', (req, res)=>{
+router.post('/passwd', (req, res)=>{
   if(req.session.info&&req.session.info.user.indexOf("admin")>-1){
     if(typeof req.body.pwd=="string"&&typeof req.body.opwd==="string"){
       if(req.body.cpwd===req.body.pwd){
@@ -51,6 +51,16 @@ router.post('/system', (req, res)=>{
   }
   return res.redirect("/manage");
   //return res.status(403).send("please login again");
+});
+
+router.post("/rename", (req, res)=>{
+  if(req.session.info&&req.session.info.user.indexOf("admin")>-1){
+    if(hasher(hasher(req.body.pwd, "sha256"), "sha512")!=config.password)
+      return res.status(403).send("wrong password");
+    config.name = req.body.name;
+    fs.writeFileSync(`${__dirname}/../bin/config.db.json`, JSON.stringify(config));
+  }
+  return res.redirect("/manage");
 });
 
 module.exports = router;
