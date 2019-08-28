@@ -86,7 +86,7 @@ main.prototype.remove = function( name ){
   // ^[\u4e00-\u9fa5_a-zA-Z0-9]+$ chinese、"_"、alphebet and number
   if(!/^[\u4e00-\u9fa5_a-zA-Z0-9]+$/.test(name)||name.length==0)
     return {error:"access denied"};
-  if(filepath!=null){
+  if(filepath!=null&&this.list.indexOf(name)>-1){
     fs.unlinkSync(filepath+filetype)
     let index = this.cache.indexOf(this.cache.find(v=>v.name==name));
     if(index>-1)

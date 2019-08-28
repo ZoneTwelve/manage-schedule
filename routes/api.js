@@ -33,14 +33,14 @@ router.post('/:db', upload.single("table"), (req, res)=>{
   return res.status(result.error?400:200).send(result);
 })
 
-router.put('/:db', (req, res)=>{
+router.put('/:db', upload.single("table"), (req, res)=>{
   var target = req.file.path;
   let result = manage.update({
-    name:req.patams.db,
+    name:req.params.db,
     data:fs.readFileSync(target)
   });
   fs.unlinkSync(target);
-  return res.status(result.error?400:200),send(result);
+  return res.status(result.error?400:200).send(result);
 });
 
 router.delete('/:db', (req, res)=>{

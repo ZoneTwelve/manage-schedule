@@ -26,7 +26,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
   secret:random(256),
-  cookie: { maxAge: 60 * 1000 }
+  cookie: { maxAge:31536000000}
 }));
 
 app.use('/', indexRouter);

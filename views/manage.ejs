@@ -9,7 +9,27 @@
 </head>
 <body>
 <div class="container">
-<h1>not finsh</h1>
+  <h1><%= title %> - 管理界面</h1>
+  <h2>新增</h2>
+  <form name="upload" class="container">
+    <p>資料表名稱: <input type="text" name="filename" pattern="^[\u4e00-\u9fa5_a-zA-Z0-9]+$" title="只能輸入 中文、英文、數字、底線_"></p>
+    <p>資料表: <input type="file" name="table"></p>
+    <input type="submit" value="上傳"><input type="reset">
+  </form>
+  <hr>
+  <h2>修改</h2>
+  <form name="modify" class="container">
+    <p>資料表名稱: <select name="filename"></select></p>
+    <p>資料表檔案: <input type="file" name="table"></p>
+    <input type="submit" value="上傳"><input type="reset">
+  </form>
+  <hr>
+  <h2>刪除</h2>
+  <form name="del" class="container">
+    <p>資料表: <select name="table"></select></p>
+    <input type="submit" value="確認刪除">
+  </form>
 </div>
+<script src="src/js/root/manage.js"></script>
 </body>
 </html>

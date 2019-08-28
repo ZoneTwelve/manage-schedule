@@ -1,0 +1,8 @@
+datetime,day,noon,night,vacation,note
+mon,Asir,Bsir/Dsir,Csir,no one,
+tue,Bsir,Asir,Dsir,Csir,noon guy need to report
+wed,Dsir,Csir,Bsir,Asir,noon guy need to report and set a new password for the computer
+thu,Csir,Bsir/Asir,Dsir,no one,
+fir,Dsir,Asir,Csir,Bsir,emergency alert test
+sat,,,,every one,weekend
+sun,,,,every one,weekend
