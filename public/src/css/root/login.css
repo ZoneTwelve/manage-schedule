@@ -1,0 +1,40 @@
+body{
+  text-align:center;
+  height:100%;
+  /*background: url('http://getwallpapers.com/wallpaper/full/8/9/2/807735-ubuntu-linux-wallpapers-1920x1200-smartphone.jpg')center center fixed no-repeat;*/
+  background:url('/src/images/debian-wallpaper.jpg') center center fixed no-repeat;
+  background-size:cover;
+}
+
+#box{
+  width:100%;
+}
+
+.container{
+  margin:20% auto;
+  padding: 150px 0px;
+  background:rgba(51, 51,51, 0.5);
+}
+.input-platform{
+  color:white;
+  width:100%;
+  //background:rgba(200, 200, 200, 0.6);
+}
+
+.input-platform>p>input[type="password"]{
+  text-align:center;
+  padding:5px 0px;
+}
+form{
+  width:80%;
+}
+.input-platform>p>input[type="submit"]{
+  margin:0px 10%;
+  padding:10px 0px;
+  width:80%;
+}
+input{
+  border:0px solid;
+  color:white;
+  background:rgb(81,81,81);
+}

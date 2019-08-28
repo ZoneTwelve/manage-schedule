@@ -17,7 +17,6 @@ main.prototype.get = function( name ){
   //  name: string
   let filepath = this.check(name);
   //path.join(this.path, name)//this.check(name);
-  console.log(name, filepath+filetype, fs.existsSync(filepath+filetype));
   if(filepath==null||!fs.existsSync(filepath+filetype))
     return {error:"file is not exist or not allow"};
   let tmp = this.cache.find(obj=>obj.name==name);
@@ -82,9 +81,7 @@ main.prototype.update = function({ name, data }){
 main.prototype.remove = function( name ){
   //datetype:
   //  name: string
-  console.log(this.path, name);
   let filepath = this.check(name);
-  console.log("file", filepath, name);
   // ^[A-Za-z\-0-9]+$/ match up or lowercase alphebet、"-" and number 0-9
   // ^[\u4e00-\u9fa5_a-zA-Z0-9]+$ chinese、"_"、alphebet and number
   if(!/^[\u4e00-\u9fa5_a-zA-Z0-9]+$/.test(name)||name.length==0)

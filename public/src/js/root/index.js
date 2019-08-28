@@ -2,7 +2,17 @@ var list;
 window.onload = function(){
   request("list", (db)=>{
     list = db;
-    load(db[0]);
+    //let get = GET();
+    let table = GET()["table"];//location.hash.substr(1, location.hash.length);
+    let index = list.indexOf(table);
+    /*
+    let index = list.indexOf(get["table"]);
+    load(db[index||0]);
+    if(index==-1)
+      alert("找不到"+get["table"]);
+    if(get["hidden"]!==undefined)
+      document.querySelector("h2").innerHTML="";
+    */
     document.querySelector("#selector").onchange = function(){
       load(this.value);
     }
@@ -10,12 +20,28 @@ window.onload = function(){
       document.querySelector("#selector").appendChild(
         createElement("option", {value:option, innerText:option})
       );
+    load(index==-1?0:index)
   })
 }
 
+function GET(){
+  let obj = location.search.substr(1, location.search.length).split("&").map(g=>g.split("="));
+  let result = new Object();
+  obj.forEach(v=>{
+    result[v[0]] = v[1];
+  });
+  return result;
+}
+
 function load(name){
-  if(typeof name!="string")
+  if(typeof name=="number"){
+    document.querySelectorAll("option")[name+1].selected = true;
+    name = list[name];
+  }
+  if(typeof name!="string"){
     name = this.value;
+  }
+  //別罵我拜託, 我只是沒想過會寫這個功能
   request(name, (db)=>{
     setup(db);
   })

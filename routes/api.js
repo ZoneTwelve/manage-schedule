@@ -1,16 +1,15 @@
 var express = require('express');
 var router = express.Router();
+const fs = require("fs");
+
 var manage = new (require("../modules/schedule.manage"))({
   root:__dirname, 
   db:"../public/document", 
   tmp:"../public/document/temp" 
 });
-//const manage = new require("../modules/schedule.manage")(__dirname, "../public/document");
-
 var multer  = require('multer');
 var upload = multer({ dest:manage.temp });
 
-const fs = require("fs");
 
 router.get('/', (req, res)=>{
   res.send("RESTful API");
@@ -18,7 +17,6 @@ router.get('/', (req, res)=>{
 
 // 取得資料
 router.get('/list', (req, res)=>{
-  console.log(manage);
   res.json(manage.list);
 })
 router.get('/:db', (req, res)=>{ 
@@ -36,9 +34,13 @@ router.post('/:db', upload.single("table"), (req, res)=>{
 })
 
 router.put('/:db', (req, res)=>{
-  console.log('when update', req.params.db);
-  console.log(manage.update);
-  res.send("b");
+  var target = req.file.path;
+  let result = manage.update({
+    name:req.patams.db,
+    data:fs.readFileSync(target)
+  });
+  fs.unlinkSync(target);
+  return res.status(result.error?400:200),send(result);
 });
 
 router.delete('/:db', (req, res)=>{
