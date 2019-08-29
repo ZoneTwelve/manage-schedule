@@ -17,7 +17,12 @@ router.get('/', (req, res)=>{
 
 // 取得資料
 router.get('/list', checkaccess, (req, res)=>{
-  res.json(manage.list);
+  let list = manage.list;
+  if(req.session.info.allow.length>0)
+    list = list.filter(v=>req.session.info.allow.indexOf(v)>-1);
+  if(req.session.info.deny.length>0)
+    list = list.filter(v=>req.session.info.deny.indexOf(v)==-1);
+  return res.json(list);
 });
 
 // feature: restrict access
@@ -26,6 +31,25 @@ router.get('/list', checkaccess, (req, res)=>{
 router.get("/login", (req, res)=>{
   res.render("login", {message:""});
 });
+
+router.get("/login/:token", (req, res)=>{
+  //取得存取權限 session
+  if(typeof req.params.token==="string"){
+    let user = manage.find(req.params.token);
+    if(!user.error&&user.note!=="administrator"){
+      req.session.info = {
+        user:user.name,
+        access:[],
+        allow:user.allow,
+        deny:user.deny
+      };
+      return res.redirect(302, "/");
+    }
+  }
+  return res.render("login", {message:"這個連結已經失效, 請詢問負責的單位"});
+  //res.status(401).send({error:"login fail"});
+});
+
 
 router.post("/login", (req ,res)=>{
   if(typeof req.body.pwd==="string"){
@@ -53,28 +77,37 @@ router.post("/login", (req ,res)=>{
 });
 
 // use access token to get passport
-router.get("/access/:token", (req, res)=>{
+router.get("/access", checkaccess, (req, res)=>{
   //取得存取權限 session
-});
-
-// add new access token
-router.post("/access/:token", checkaccess, (req, res)=>{
-  //新增存取權杖
   let usr = isuser(req.session);
   if(usr.error)
     return res.status(403).send(usr);
+});
+
+// add new access token
+router.post("/access", checkaccess, (req, res)=>{
+  //新增存取權杖
+  console.log(req.body);
+  req.body.limit = parseInt(req.body.limit);
+  let usr = isuser(req.session);
+  if(usr.error)
+    return res.status(403).send(usr);
+  
   if(typeof req.body.uid=="string"&&
      typeof req.body.note=="string"&&
      typeof req.body.allow=="string"&&
-     typeof req.body.deny=="string"){
+     typeof req.body.deny=="string"&&
+     !isNaN(req.body.limit)){
     
     let user = manage.generate({
       uid:req.body.uid,
       note:req.body.note,
-      allow:req.body.allow.split(","),
-      deny:req.body.deny.split(",")
-    });   
+      allow:req.body.allow.split(",").filter(v=>v.length>0),
+      deny:req.body.deny.split(",").filter(v=>v.length>0)
+    });
+    return res.send(user);
   }
+  return res.send({error:"missing some variable"});
 });
 
 // delete access token

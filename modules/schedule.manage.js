@@ -11,10 +11,10 @@ function main( {root, db, tmp} ){
   this.path = path.join(root, db);
   this.temp = path.join(root, tmp);
   this.users = [
-    {name:"admin",note:"administrator",allow:[],deny:[]},
-    {name:"test-"+random(12),note:"tester",allow:["example"],deny:[]}
+    {name:"admin",note:"administrator",allow:[],deny:[],limit:-1},
+    {name:"allow-"+random(12),note:"tester",allow:["example"],deny:[],limit:-1},
+    {name:"deny-"+random(12),note:"tester2",allow:[],deny:["example"],limit:-1}
   ];
-  console.log(this.users[1]);
   if(!fs.existsSync(this.path)||!fs.existsSync(this.temp))
     throw `${this.path} or ${this.temp} is not exist`;
   this.refresh();
@@ -125,7 +125,6 @@ main.prototype.refresh = function(){
 main.prototype.find = function(user){
   if(typeof user=="string"){
     for(let usr of this.users){
-      console.log(usr.name, user);
       if(usr.name==user)
         return usr;
     }
@@ -141,14 +140,16 @@ main.prototype.find = function(user){
   return {error:"can not find the user from user list"};
 }
 
-main.prototype.generate = function( {uid, note, allow, deny} ){
-  if(!/^[a-zA-Z_]+$/.test(mark))
-    return {error:"the mark can not be set spical character, only allow a-z A-Z、number and \"_\""};
+main.prototype.generate = function( {uid, note, allow, deny, limit} ){
+  if(uid.length>0&&!/^[a-zA-Z0-9_]+$/.test(uid))
+    return {error:"the uid can not be set spical character, only allow a-z A-Z、number and \"_\""};
+  
   let token = {
-    name:`${random(128)}${user==undefined?"":("-"+uid)}`,
+    name:`${random(16)}${uid.length==0?"":("-"+uid)}`,
     note:note,
     allow:allow,
-    deny:deny
+    deny:deny,
+    limit:limit
   };
   this.users.push(token);
   return token;

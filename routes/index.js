@@ -12,7 +12,7 @@ router.get('/', function(req, res, next) {
 
 router.get('/manage', (req, res)=>{
   //default password: default
-  if(req.session.info!=undefined){
+  if(req.session.info!=undefined&&req.session.info.user=="admin"){
     return res.render("manage", {title:config.name});
   }
   return res.render("login", {message:""});
@@ -63,6 +63,9 @@ router.post("/rename", (req, res)=>{
   return res.redirect("/manage");
 });
 
-router.get("/login", (req, res)=>res.redirect("/schedule/login"));
+router.get("/login/:token", (req, res)=>{
+  res.redirect(302, `/schedule/login/${req.params.token}`);
+});
+router.get("/login", (req, res)=>res.redirect(302, "/schedule/login"));
 
 module.exports = router;

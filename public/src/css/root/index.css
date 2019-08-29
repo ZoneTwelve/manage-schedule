@@ -38,7 +38,6 @@ table{
   font-size:18px;
 }
 
-
 option{
   color:black;
 }
@@ -59,7 +58,7 @@ select{
   font-weight: bold;
   padding: 2px 20px 5px 20px;
   //width: 178px;
-  //*width: 150px;
+  // *width: 150px;
   *background: #58B14C;
   //-webkit-appearance: none;
 }

@@ -23,24 +23,42 @@ System.prototype.setup = function(){
 }
 
 System.prototype.apply = function(){
-  this.element.del.table.innerHTML="";
-  for(let val of this.list)
+  var defaultOption = "<option value='空的'>請選擇資料表</option>";
+  
+  //setup delete's selector options
+  this.element.del.table.innerHTML=defaultOption;
+  
+  //setup modify's selector options
+  this.element.modify.filename.innerHTML=defaultOption;
+  
+  //setup key-gen's selector
+  this.element.addkey.unsel = "";
+  this.element.addkey.besel = "";
+  for(let val of this.list){
     this.element.del.table.appendChild(createElement("option", {value:val, innerText:val}));
   
-  this.element.modify.table.innerHTML="";
-  for(let val of this.list)
     this.element.modify.filename.appendChild(createElement("option", {value:val, innerText:val}));
 
+    
+    let ausel = this.element.addkey.querySelector('[name="ausel"]');
+    let absel = this.element.addkey.querySelector('[name="absel"]');
+    let dusel = this.element.addkey.querySelector('[name="dusel"]');
+    let dbsel = this.element.addkey.querySelector('[name="dbsel"]');
+    ausel.appendChild(createElement("li", {onclick:this.putkey, innerText:val, db:absel}));
+    dusel.appendChild(createElement("li", {onclick:this.putkey, innerText:val, db:dbsel}));
+  }
 }
 
 
 System.prototype.upload = function(){
   console.log(this.table.files[0])
   //uploadFiles('/server', this.files);
+  //this.reset();
   if(this.filename.value!=""&&this.table.files[0]!=undefined&&this.table.files[0].size<1024*10){
     uploadFiles("POST", this.filename.value, this.table.files[0],(result)=>{
       system.setup();
       alert(result.error||result.message);
+      this.reset();
     });
   }
   return false;
@@ -71,8 +89,61 @@ System.prototype.del = function(){
   return false;
 }
 
-system.prototype.addkey = function(){
+System.prototype.addkey = function(){
+  var formData = new FormData();
+  let allow = system.element.addkey.querySelector('[name="absel"]').innerText.replace(/\n/g, ",");
+  let deny = system.element.addkey.querySelector('[name="dbsel"]').innerText.replace(/\n/g, ",");
+  let option = {
+    uid:this.uid.value,
+    note:this.note.value,
+    limit:this.limit.value,
+    allow:allow,
+    deny:deny
+  };
+  let params = [];
+  for(let obj in (option))
+    params.push(`${encodeURIComponent(obj)}=${encodeURIComponent(option[obj])}`);
+  console.log(params);
   
+
+
+    var http = new XMLHttpRequest();
+    http.open('POST', "/schedule/access", true);
+
+    //Send the proper header information along with the request
+    http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+    http.onreadystatechange = function() {//Call a function when the state changes.
+        if(http.readyState == 4 && http.status == 200) {
+            alert(http.responseText);
+        }
+    }
+    http.send(params.join("&"));
+
+
+
+  
+  //send("access", "POST", (result)=>{
+  //  console.log(result);
+  //}, "?"+params.join("&"));
+  //console.log(absel.innerText.split("\n").join(","));
+  return false;
+}
+System.prototype.putkey = function(){
+  //console.log(this.parentElement);
+  let target = this.db;
+  if(this.parentElement.selected==this.innerText){
+    this.className = "";
+    this.db = this.parentElement;
+    target.appendChild(this);
+  }else{
+    if(this.parentElement.object!=undefined)
+      this.parentElement.object.className = "";
+    this.parentElement.selected = this.innerText;
+    this.parentElement.object = this;
+    this.className = "selected";
+  }
+  return false;
 }
 
 function createElement(tag, content = {}, setting = {}){
@@ -98,7 +169,7 @@ function request(target, callback){
   xhttp.send();
 }
 
-function send(target, method, callback){
+function send(target, method, callback, params){
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState==4){
@@ -107,7 +178,7 @@ function send(target, method, callback){
     }
   };
   xhttp.open(method, `/schedule/${target}`, true);
-  xhttp.send();
+  xhttp.send(params);
 }
 
 function uploadFiles(method, url, file, callback) {

@@ -10,3 +10,24 @@ body{
   background:#0080ff;
   width:100%;
 }
+
+
+.ul-selector{
+  width:30%;
+}
+
+.selected{
+  border:2px solid black;
+}
+
+.allow{
+  color:green;
+}
+
+.notdeny{
+  color:blue;
+}
+
+.deny{
+  color:red;
+}
