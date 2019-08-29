@@ -18,7 +18,73 @@ router.get('/', (req, res)=>{
 // 取得資料
 router.get('/list', checkaccess, (req, res)=>{
   res.json(manage.list);
-})
+});
+
+// feature: restrict access
+
+
+router.get("/login", (req, res)=>{
+  res.render("login", {message:""});
+});
+
+router.post("/login", (req ,res)=>{
+  if(typeof req.body.pwd==="string"){
+    let user = manage.find(req.body.pwd);
+    if(!user.error&&user.note!=="administrator"){
+      req.session.info = {
+        user:user.name,
+        access:[],
+        allow:user.allow,
+        deny:user.deny
+      };
+      /*
+      req.session.info = req.session.info||new Object();
+      req.session.info.user = req.session.info.user||[];
+      req.session.info.user = req.session.info.user||[];
+      req.session.info.allow = req.session.info.allow||[];
+      req.session.info.deny = req.session.info.deny||[];
+      */
+      return res.redirect("/");
+      //return res.send({message:"success"});
+    }
+  }
+
+  return res.status(401).send({error:"login fail"});
+});
+
+// use access token to get passport
+router.get("/access/:token", (req, res)=>{
+  //取得存取權限 session
+});
+
+// add new access token
+router.post("/access/:token", checkaccess, (req, res)=>{
+  //新增存取權杖
+  let usr = isuser(req.session);
+  if(usr.error)
+    return res.status(403).send(usr);
+  if(typeof req.body.uid=="string"&&
+     typeof req.body.note=="string"&&
+     typeof req.body.allow=="string"&&
+     typeof req.body.deny=="string"){
+    
+    let user = manage.generate({
+      uid:req.body.uid,
+      note:req.body.note,
+      allow:req.body.allow.split(","),
+      deny:req.body.deny.split(",")
+    });   
+  }
+});
+
+// delete access token
+router.delete("/access/:token", (req, res)=>{
+  //刪除存取權杖
+});
+
+
+//database api
+
 router.get('/:db', (req, res)=>{ 
   return res.json(manage.get(req.params.db));
 });
@@ -57,24 +123,6 @@ router.delete('/:db', checkaccess, (req, res)=>{
   res.status(result.error?403:200).send(result);
 });
 
-// feature: restrict access
-// use access token to get passport
-router.get("/access/:token", (req, res)=>{
-  //取得存取權限 session
-});
-
-// add new access token
-router.post("/access/:token", checkaccess, (req, res)=>{
-  //新增存取權杖
-  let usr = isuser(req.session);
-  if(usr.error)
-    return res.status(403).send(usr);
-});
-
-// delete access token
-router.delete("/access/:token", (req, res)=>{
-  //刪除存取權杖
-});
 
 function isuser(sess, user = "admin"){
   if(sess==undefined)

@@ -65,3 +65,6 @@ typings/
 
 # swap
 .*.swp
+
+# config data
+config.db.json

@@ -63,4 +63,6 @@ router.post("/rename", (req, res)=>{
   return res.redirect("/manage");
 });
 
+router.get("/login", (req, res)=>res.redirect("/schedule/login"));
+
 module.exports = router;
