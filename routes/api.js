@@ -24,7 +24,7 @@ router.get('/:db', (req, res)=>{
 });
 
 router.post('/:db', checkaccess, upload.single("table"), (req, res)=>{
-  let usr = isuser(req.sess);
+  let usr = isuser(req.session);
   if(usr.error)
     return res.status(403).send(usr);
   let target = req.file.path;
