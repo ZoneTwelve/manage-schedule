@@ -1,11 +1,16 @@
 var fs = require("fs");
 var path = require("path");
+
+const random = require("./random");
+
 var filetype = ".csv";
+
 
 function main( {root, db, tmp} ){
 //const main = ({root, path}) => {
   this.path = path.join(root, db);
   this.temp = path.join(root, tmp);
+  this.users = ["admin"];
   if(!fs.existsSync(this.path)||!fs.existsSync(this.temp))
     throw `${this.path} or ${this.temp} is not exist`;
   this.refresh();
@@ -110,6 +115,36 @@ main.prototype.check = function(filename, root){
 main.prototype.refresh = function(){
   this.cache = [];
   this.list = fs.readdirSync(this.path).filter(v=>/\.csv$/.test(v)).map(v=>v.replace(/\.csv$/, ""));
+}
+
+// this function will check the token for access the schedule system
+main.prototype.find = function(user){
+  if(typeof usr==="object"){
+    for(let usr of this.users){
+      let token = user.find(u=>usr.user==user.name);
+      if(token!=undefined) 
+        return token;
+    }
+      
+  }
+  else if(typeof usr==="string"){
+    return {error:"this function is not working right now"};
+  }
+
+  return {error:"can not find the user from user list"};
+}
+
+main.prototype.generate = function( {user, note, allow, deny} ){
+  if(!/^[a-zA-Z_]+$/.test(mark))
+    return {error:"the mark can not be set spical character, only allow a-z A-Z、number and \"_\""};
+  let token = {
+    name:`${random(128)}${user==undefined?"":("-"+user)}`,
+    note:note,
+    allow:allow,
+    deny:deny
+  };
+  this.users.push(token);
+  return token;
 }
 
 module.exports = main;

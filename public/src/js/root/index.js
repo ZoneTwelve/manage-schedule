@@ -1,6 +1,8 @@
 var list;
 window.onload = function(){
   request("list", (db)=>{
+    if(db.error)
+      return document.querySelector("tbody").innerText = db.error;
     list = db;
     //let get = GET();
     let table = GET()["table"];//location.hash.substr(1, location.hash.length);
@@ -48,7 +50,7 @@ function load(name){
 }
 
 function setup(db){
-  document.querySelector("#title").innerText = db.name;
+  //document.querySelector("#title").innerText = db.name;
   document.querySelector("#schedule>table>thead").innerHTML="";
   document.querySelector("#schedule>table>tbody").innerHTML="";
   let thead = createElement("tr");

@@ -71,6 +71,10 @@ System.prototype.del = function(){
   return false;
 }
 
+system.prototype.addkey = function(){
+  
+}
+
 function createElement(tag, content = {}, setting = {}){
   let el = document.createElement(tag);
   for(let set of Object.keys(setting)){
