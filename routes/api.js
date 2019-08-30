@@ -79,9 +79,13 @@ router.post("/login", (req ,res)=>{
 // use access token to get passport
 router.get("/access", checkaccess, (req, res)=>{
   //取得存取權限 session
+  
   let usr = isuser(req.session);
   if(usr.error)
     return res.status(403).send(usr);
+  let db = manage.users.slice();
+  db.shift();
+  return res.send(db);
 });
 
 // add new access token
@@ -107,7 +111,8 @@ router.post("/access", checkaccess, (req, res)=>{
     });
     return res.send(user);
   }
-  return res.send({error:"missing some variable"});
+  return res.status(400).send({error:"缺少一些參數, 請通知開發者", wrong:"如果你是駭客我一定要打你"});
+  //return res.send({error:"missing some variable"});
 });
 
 // delete access token
@@ -161,20 +166,22 @@ function isuser(sess, user = "admin"){
   if(sess==undefined)
     return {error:"we got the system error, please report to the management department"};
   if(sess.info&&sess.info.user){
-    let index = sess.info.user.indexOf(user)
+    index = sess.info.user.indexOf(user)
     if(index>-1)
       return {message:"user find!", id:index};
     else
       return {error:"user not found"};
   }
-  return {error:"your not the admin!!!!", id:index};
+  return res.status(403).send({error:"你不是指定的使用者!!!"});
+  //return {error:"your not the admin!!!!", id:index};
 }
 
 function checkaccess(req, res, next){
   let sess = req.session;
   if(sess.info&&sess.info.user&&manage.find(sess.user)!=undefined)
     return next();
-  return res.status(403).send({error:"you don't have the access for management, please login again", link:"/login"});
+  return res.status(403).send({error:"目前沒有可以使用的資料表, 請登入或者詢問管理的單位"});
+  //return res.status(403).send({error:"you don't have the access for management, please login again", link:"/login"});
 }
 
 module.exports = router;

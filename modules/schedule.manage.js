@@ -12,8 +12,6 @@ function main( {root, db, tmp} ){
   this.temp = path.join(root, tmp);
   this.users = [
     {name:"admin",note:"administrator",allow:[],deny:[],limit:-1},
-    {name:"allow-"+random(12),note:"tester",allow:["example"],deny:[],limit:-1},
-    {name:"deny-"+random(12),note:"tester2",allow:[],deny:["example"],limit:-1}
   ];
   if(!fs.existsSync(this.path)||!fs.existsSync(this.temp))
     throw `${this.path} or ${this.temp} is not exist`;

@@ -1,4 +1,5 @@
 const system = new System();
+
 window.onload = function(){
   system.setup();
   for(var i=0,list=document.querySelectorAll("form[name]");i<list.length;i++){
@@ -6,6 +7,8 @@ window.onload = function(){
     system.element[list[i]['name']] = list[i];
     list[i].onsubmit = system[list[i]["name"]];
   }
+
+  setup_qrcode();
 }
 
 function System(){
@@ -23,7 +26,7 @@ System.prototype.setup = function(){
 }
 
 System.prototype.apply = function(){
-  var defaultOption = "<option value='空的'>請選擇資料表</option>";
+  var defaultOption = "<option value='資料表, 請選擇資料'>請選擇資料表</option>";
   
   //setup delete's selector options
   this.element.del.table.innerHTML=defaultOption;
@@ -32,21 +35,24 @@ System.prototype.apply = function(){
   this.element.modify.filename.innerHTML=defaultOption;
   
   //setup key-gen's selector
-  this.element.addkey.unsel = "";
-  this.element.addkey.besel = "";
+  let ausel = this.element.addkey.querySelector('[name="ausel"]');
+  let absel = this.element.addkey.querySelector('[name="absel"]');
+  let dusel = this.element.addkey.querySelector('[name="dusel"]');
+  let dbsel = this.element.addkey.querySelector('[name="dbsel"]');
+  ausel.innerHTML = "";
+  absel.innerHTML = "";
+  dusel.innerHTML = "";
+  dbsel.innerHTML = "";
   for(let val of this.list){
     this.element.del.table.appendChild(createElement("option", {value:val, innerText:val}));
   
     this.element.modify.filename.appendChild(createElement("option", {value:val, innerText:val}));
 
     
-    let ausel = this.element.addkey.querySelector('[name="ausel"]');
-    let absel = this.element.addkey.querySelector('[name="absel"]');
-    let dusel = this.element.addkey.querySelector('[name="dusel"]');
-    let dbsel = this.element.addkey.querySelector('[name="dbsel"]');
     ausel.appendChild(createElement("li", {onclick:this.putkey, innerText:val, db:absel}));
     dusel.appendChild(createElement("li", {onclick:this.putkey, innerText:val, db:dbsel}));
   }
+  setup_qrcode();
 }
 
 
@@ -90,6 +96,8 @@ System.prototype.del = function(){
 }
 
 System.prototype.addkey = function(){
+  if(!confirm("確定要生成金鑰嗎? 如果隨意生成金鑰可能造成資安問題喔"))
+    return false;
   var formData = new FormData();
   let allow = system.element.addkey.querySelector('[name="absel"]').innerText.replace(/\n/g, ",");
   let deny = system.element.addkey.querySelector('[name="dbsel"]').innerText.replace(/\n/g, ",");
@@ -114,8 +122,10 @@ System.prototype.addkey = function(){
     http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 
     http.onreadystatechange = function() {//Call a function when the state changes.
-        if(http.readyState == 4 && http.status == 200) {
-            alert(http.responseText);
+        if(http.readyState==4) {
+            let json = JSON.parse(http.responseText);
+            alert(json.error||(`${location.origin}/login/${json.name}`));
+            //alert(http.responseText);
         }
     }
     http.send(params.join("&"));
@@ -199,6 +209,43 @@ function uploadFiles(method, url, file, callback) {
   //xhr.onload = function(e) { ... };
 
   xhr.send(formData);  // multipart/form-data
+}
+
+function setup_qrcode(){
+  var qrcon = document.querySelector("#qrcode-container");
+  request("/access", (result)=>{
+    console.log(result);
+    qrcon.innerHTML="";
+    for(let obj of result){
+      let url = `${location.origin}/login/${obj.name}`;
+      let con = createElement("div", {onclick:copyThisToken});
+      
+      con.qrcode = new QRCode(con, {height:150, width:150});
+      con.qrcode.makeCode(url);
+      con.url = url;
+      let input = (createElement("input", {url:url, value:url}));
+      let note = (createElement("p", { innerText:"備註: "+(obj.note==""?"沒有備註":obj.note)}));
+      con.target = input;
+      con.appendChild(note);
+      con.appendChild(input);
+
+      con.appendChild(createElement("p"));
+
+      qrcon.appendChild(con);
+    }
+  });
+}
+
+function copyThisToken(){
+  //this.disabled = false;
+  this.target.value = this.url;
+  console.log(this.target);
+  this.target.select();
+  this.target.setSelectionRange(0, 99999); /*For mobile devices*/
+  //this.disabled = true;
+  //this.parentElement.foucs();
+  document.execCommand("copy");
+  alert("網址複製成功");
 }
 
 //document.querySelector('input[type="file"]').addEventListener('change', function(e) {
