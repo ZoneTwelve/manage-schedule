@@ -5,7 +5,8 @@ const fs = require("fs");
 var manage = new (require("../modules/schedule.manage"))({
   root:__dirname, 
   db:"../document", 
-  tmp:"../document/temp" 
+  tmp:"../document/temp",
+  token:"../bin"
 });
 var multer  = require('multer');
 var upload = multer({ dest:manage.temp });
@@ -32,49 +33,60 @@ router.get("/login", (req, res)=>{
   res.render("login", {message:""});
 });
 
-router.get("/login/:token", (req, res)=>{
+router.get("/login/:token", (req, res, next)=>{
   //取得存取權限 session
   if(typeof req.params.token==="string"){
+    res.usrtoken = req.params.token;
+    return next();
+    /*
     let user = manage.find(req.params.token);
     if(!user.error&&user.note!=="administrator"){
+      if(user.limit==0)
+        return res.status(403).send({error:"這個連結已經失效了, 若有需求請聯絡管理單位."});
+      if(user.limit>0){
+        user.limit--;
+      }
       req.session.info = {
-        user:user.name,
+        user:[user.name],
         access:[],
         allow:user.allow,
         deny:user.deny
       };
       return res.redirect(302, "/");
     }
+    */
   }
   return res.render("login", {message:"這個連結已經失效, 請詢問負責的單位"});
   //res.status(401).send({error:"login fail"});
-});
+}, manageLoginToken);
 
 
-router.post("/login", (req ,res)=>{
+router.post("/login", (req ,res, next)=>{
   if(typeof req.body.pwd==="string"){
-    let user = manage.find(req.body.pwd);
-    if(!user.error&&user.note!=="administrator"){
-      req.session.info = {
-        user:user.name,
-        access:[],
-        allow:user.allow,
-        deny:user.deny
-      };
-      /*
-      req.session.info = req.session.info||new Object();
-      req.session.info.user = req.session.info.user||[];
-      req.session.info.user = req.session.info.user||[];
-      req.session.info.allow = req.session.info.allow||[];
-      req.session.info.deny = req.session.info.deny||[];
-      */
-      return res.redirect("/");
-      //return res.send({message:"success"});
-    }
+    res.usrtoken = req.body.pwd;
+    return next();
   }
 
-  return res.status(401).send({error:"login fail"});
-});
+  return res.status(401).send({error:"密碼錯誤"});
+}, manageLoginToken);
+
+function manageLoginToken(req, res){
+  let user = manage.find(res.usrtoken);
+  if(!user.error&&user.note!=="administrator"){
+    if(user.limit>0&&!res.allowSess)
+      user.limit--;
+    if(user.limit==0&&!res.allowSess)
+      return res.status(403).send({error:"這個連結已經失效了, 若有需求請聯絡管理單位."});
+    req.session.info = {
+      user:[user.name],
+      access:[],
+      allow:user.allow,
+      deny:user.deny
+    };
+    manage.storageToken();
+    return res.redirect(302, "/");
+  }
+}
 
 // use access token to get passport
 router.get("/access", checkaccess, (req, res)=>{
@@ -91,7 +103,6 @@ router.get("/access", checkaccess, (req, res)=>{
 // add new access token
 router.post("/access", checkaccess, (req, res)=>{
   //新增存取權杖
-  console.log(req.body);
   req.body.limit = parseInt(req.body.limit);
   let usr = isuser(req.session);
   if(usr.error)
@@ -107,7 +118,8 @@ router.post("/access", checkaccess, (req, res)=>{
       uid:req.body.uid,
       note:req.body.note,
       allow:req.body.allow.split(",").filter(v=>v.length>0),
-      deny:req.body.deny.split(",").filter(v=>v.length>0)
+      deny:req.body.deny.split(",").filter(v=>v.length>0),
+      limit:req.body.limit
     });
     return res.send(user);
   }
@@ -118,6 +130,7 @@ router.post("/access", checkaccess, (req, res)=>{
 // delete access token
 router.delete("/access/:token", (req, res)=>{
   //刪除存取權杖
+  
 });
 
 

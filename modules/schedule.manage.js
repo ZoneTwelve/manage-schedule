@@ -6,13 +6,12 @@ const random = require("./random");
 var filetype = ".csv";
 
 
-function main( {root, db, tmp} ){
+function main( {root, db, tmp, token} ){
 //const main = ({root, path}) => {
   this.path = path.join(root, db);
   this.temp = path.join(root, tmp);
-  this.users = [
-    {name:"admin",note:"administrator",allow:[],deny:[],limit:-1},
-  ];
+  this.dbpath = path.join(root, token, "token.db.json");
+  this.users = JSON.parse(fs.readFileSync(this.dbpath, "utf8"));
   if(!fs.existsSync(this.path)||!fs.existsSync(this.temp))
     throw `${this.path} or ${this.temp} is not exist`;
   this.refresh();
@@ -123,15 +122,17 @@ main.prototype.refresh = function(){
 main.prototype.find = function(user){
   if(typeof user=="string"){
     for(let usr of this.users){
-      if(usr.name==user)
+      if(usr.name==user){
         return usr;
+      }
     }
     return {error:"user is not defined"};
   }else if(typeof usr==="object"){
     for(let usr of this.users){
       let token = user.find(u=>usr.user==user.name);
-      if(token!=undefined) 
+      if(token!=undefined){
         return token;
+      }
     }
   }
 
@@ -141,7 +142,6 @@ main.prototype.find = function(user){
 main.prototype.generate = function( {uid, note, allow, deny, limit} ){
   if(uid.length>0&&!/^[a-zA-Z0-9_]+$/.test(uid))
     return {error:"the uid can not be set spical character, only allow a-z A-Z、number and \"_\""};
-  
   let token = {
     name:`${random(16)}${uid.length==0?"":("-"+uid)}`,
     note:note,
@@ -150,7 +150,14 @@ main.prototype.generate = function( {uid, note, allow, deny, limit} ){
     limit:limit
   };
   this.users.push(token);
+
+  //fs.writeFileSync(this.dbpath, JSON.stringify(this.users));
+  this.storageToken();
   return token;
+}
+
+main.prototype.storageToken = function(){
+  fs.writeFileSync(this.dbpath, JSON.stringify(this.users));
 }
 
 module.exports = main;

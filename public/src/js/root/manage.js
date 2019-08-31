@@ -124,6 +124,7 @@ System.prototype.addkey = function(){
     http.onreadystatechange = function() {//Call a function when the state changes.
         if(http.readyState==4) {
             let json = JSON.parse(http.responseText);
+            system.apply();
             alert(json.error||(`${location.origin}/login/${json.name}`));
             //alert(http.responseText);
         }
@@ -153,6 +154,11 @@ System.prototype.putkey = function(){
     this.parentElement.object = this;
     this.className = "selected";
   }
+  return false;
+}
+
+System.prototype.delkey = function(){
+  console.log(this);
   return false;
 }
 
@@ -206,8 +212,6 @@ function uploadFiles(method, url, file, callback) {
     }
   };
 
-  //xhr.onload = function(e) { ... };
-
   xhr.send(formData);  // multipart/form-data
 }
 
@@ -247,7 +251,3 @@ function copyThisToken(){
   document.execCommand("copy");
   alert("網址複製成功");
 }
-
-//document.querySelector('input[type="file"]').addEventListener('change', function(e) {
-//  uploadFiles('/server', this.files);
-//}, false);

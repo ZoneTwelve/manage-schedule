@@ -50,7 +50,7 @@
 <hr>
 <div class="container">
   <h1>授權管理</h1>
-  <h2>生成新的權限金鑰</h2>
+  <h2>生成新的 QRCode (權限金鑰)</h2>
   <form name="addkey">
     <p>指定密碼: <input type="text" pattern="^[a-zA-Z0-9]+$" title="只允許英文字與數字" name="token" placeholder="密碼(非必要)"></p>
     <p>使用者: <input type="text" pattern="^[a-zA-Z0-9_]+$" title="只允取字母數字及底線" name="uid" placeholder="名稱"></p>
@@ -75,8 +75,13 @@
     <input type="submit" value="生成金鑰">
   </form>
   <hr>
-  <h2>存取權杖</h2>
+  <h2>班表 QRCode (存取權杖)</h2>
   <div id="qrcode-container" class="container"></div>
+  <hr>
+  <h2>刪除 QRCode</h2>
+  <form name="delkey" class="container">
+    
+  </form>
 </div>
 <div style="height:100px;"></div>
 <script type="text/javascript" src="/src/js/lib/jquery-3.4.1.min.js"></script>
