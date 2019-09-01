@@ -52,8 +52,8 @@
   <h1>授權管理</h1>
   <h2>生成新的 QRCode (權限金鑰)</h2>
   <form name="addkey">
-    <p>指定密碼: <input type="text" pattern="^[a-zA-Z0-9]+$" title="只允許英文字與數字" name="token" placeholder="密碼(非必要)"></p>
-    <p>使用者: <input type="text" pattern="^[a-zA-Z0-9_]+$" title="只允取字母數字及底線" name="uid" placeholder="名稱"></p>
+    <p style="display:none;">指定密碼: <input type="text" pattern="^[a-zA-Z0-9]+$" title="只允許英文字與數字" name="token" placeholder="密碼(非必要)"></p>
+    <p>特徵碼(區域或者ID): <input type="text" pattern="^[a-zA-Z0-9_]+$" title="只允取字母數字及底線" name="uid" placeholder="名稱"></p>
     <p>備註: <input type="text" name="note" placeholder="備註"></p>
     <p>存取上限(-1為無限制): <input type="number" name="limit" value="-1" placeholder="存取上限(-1為無限制)"></p>
     <h3>允許查看的資料(不選就都可以查看)</h3>
@@ -80,7 +80,8 @@
   <hr>
   <h2>刪除 QRCode</h2>
   <form name="delkey" class="container">
-    
+    <select name="token"></select>
+    <input type="submit" value="刪除">
   </form>
 </div>
 <div style="height:100px;"></div>

@@ -60,13 +60,14 @@ System.prototype.upload = function(){
   console.log(this.table.files[0])
   //uploadFiles('/server', this.files);
   //this.reset();
-  if(this.filename.value!=""&&this.table.files[0]!=undefined&&this.table.files[0].size<1024*10){
+  if(this.filename.value!=""&&this.table.files[0]!=undefined&&this.table.files[0].size<1024*1024){
     uploadFiles("POST", this.filename.value, this.table.files[0],(result)=>{
       system.setup();
       alert(result.error||result.message);
       this.reset();
     });
   }
+  alert("發生錯誤, 未輸入名稱、檔案過大或者未選擇檔案");
   return false;
 }
 
@@ -158,7 +159,16 @@ System.prototype.putkey = function(){
 }
 
 System.prototype.delkey = function(){
+  console.log(this.token.value);
+  if(this.token.value=="")
+    return false;
   console.log(this);
+  if(!confirm(`確定要刪除 ${this.token.value} 嗎?`))
+    return false;
+  send("access/"+this.token.value, "DELETE", (result)=>{
+    setup_qrcode();
+    alert(result.error||result.message);
+  });
   return false;
 }
 
@@ -217,10 +227,17 @@ function uploadFiles(method, url, file, callback) {
 
 function setup_qrcode(){
   var qrcon = document.querySelector("#qrcode-container");
-  request("/access", (result)=>{
+  request("access", (result)=>{
     console.log(result);
     qrcon.innerHTML="";
-    for(let obj of result){
+    system.element.delkey.token.innerHTML = "";
+    //for(let obj of result){
+    if(result.length==0){
+      qrcon.appendChild(createElement("p", {innerText:"目前還沒生成 QRCode"}));
+      system.element.delkey.token.appendChild(createElement("option", {value:"", innerText:"沒有"}));
+    }
+    for(var i=0;i<result.length;i++){
+      let obj = result[i];
       let url = `${location.origin}/login/${obj.name}`;
       let con = createElement("div", {onclick:copyThisToken});
       
@@ -228,7 +245,7 @@ function setup_qrcode(){
       con.qrcode.makeCode(url);
       con.url = url;
       let input = (createElement("input", {url:url, value:url}));
-      let note = (createElement("p", { innerText:"備註: "+(obj.note==""?"沒有備註":obj.note)}));
+      let note = (createElement("p", {innerText:"備註: "+(obj.note==""?"沒有備註":obj.note)}));
       con.target = input;
       con.appendChild(note);
       con.appendChild(input);
@@ -236,6 +253,12 @@ function setup_qrcode(){
       con.appendChild(createElement("p"));
 
       qrcon.appendChild(con);
+
+
+
+      //delete token selector
+      let opt = createElement("option", {value:obj.name, innerText:i+" - "+(obj.note||"沒有備註")});
+      system.element.delkey.token.appendChild(opt);
     }
   });
 }

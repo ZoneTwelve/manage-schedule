@@ -11,7 +11,7 @@ function main( {root, db, tmp, token} ){
   this.path = path.join(root, db);
   this.temp = path.join(root, tmp);
   this.dbpath = path.join(root, token, "token.db.json");
-  this.users = JSON.parse(fs.readFileSync(this.dbpath, "utf8"));
+  this.users = this.loadToken();
   if(!fs.existsSync(this.path)||!fs.existsSync(this.temp))
     throw `${this.path} or ${this.temp} is not exist`;
   this.refresh();
@@ -140,6 +140,7 @@ main.prototype.find = function(user){
 }
 
 main.prototype.generate = function( {uid, note, allow, deny, limit} ){
+  this.users = this.loadToken();
   if(uid.length>0&&!/^[a-zA-Z0-9_]+$/.test(uid))
     return {error:"the uid can not be set spical character, only allow a-z A-Z、number and \"_\""};
   let token = {
@@ -156,8 +157,32 @@ main.prototype.generate = function( {uid, note, allow, deny, limit} ){
   return token;
 }
 
+main.prototype.rmuser = function(token){
+  this.users = this.loadToken();
+  let index = this.users.filter(v=>v.name!="admin").indexOf(this.users.find(v=>v.name==token));
+  let mem = null;
+  //console.log(token, this.users[index]);
+  if(index>-1){
+    this.users.splice(index, 1);
+    this.storageToken();
+    //console.log(this.users);
+    //return true;
+  }
+  //return false;
+  return index>-1?{message:`the token ${token} been delete`}:{error:"this token is not defined"};
+  //return index==-1?{error:"this key is not defined"}:{message:`token been remove, token: ${token}`};
+}
+
 main.prototype.storageToken = function(){
   fs.writeFileSync(this.dbpath, JSON.stringify(this.users));
+}
+
+main.prototype.loadToken = function(){
+  return JSON.parse(fs.readFileSync(this.dbpath, "utf8"));
+}
+
+main.prototype.reloadToken = function(){
+  this.users = this.loadToken();
 }
 
 module.exports = main;

@@ -71,6 +71,7 @@ router.post("/login", (req ,res, next)=>{
 }, manageLoginToken);
 
 function manageLoginToken(req, res){
+  manage.reloadToken();
   let user = manage.find(res.usrtoken);
   if(!user.error&&user.note!=="administrator"){
     if(user.limit>0&&!res.allowSess)
@@ -92,6 +93,7 @@ function manageLoginToken(req, res){
 router.get("/access", checkaccess, (req, res)=>{
   //取得存取權限 session
   
+  manage.reloadToken();
   let usr = isuser(req.session);
   if(usr.error)
     return res.status(403).send(usr);
@@ -127,10 +129,21 @@ router.post("/access", checkaccess, (req, res)=>{
   //return res.send({error:"missing some variable"});
 });
 
+router.put("/access/:token", (req, res)=>{
+
+});
+
 // delete access token
 router.delete("/access/:token", (req, res)=>{
   //刪除存取權杖
-  
+  let usr = isuser(req.session);
+  if(usr.error)
+    return res.status(403).send(usr);
+  //console.log("del "+req.params.token);
+  //console.log(manage.rmuser(req.params.token));
+  //return 
+  let result = manage.rmuser(req.params.token);
+  return res.status(result.error?400:200).send(result);
 });
 
 
