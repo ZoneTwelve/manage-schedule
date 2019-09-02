@@ -93,7 +93,7 @@ function request(target, callback){
   xhttp.send();
 }
 
-
+/*
 //PWA
 function pwa(){
   if ('serviceWorker' in navigator) {
@@ -117,3 +117,4 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
     console.log('now fetch!');
 });
+*/
