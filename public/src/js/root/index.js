@@ -1,5 +1,6 @@
 var list;
 window.onload = function(){
+  console.log("loading");
   request("list", (db)=>{
     if(db.error)
       return document.querySelector("tbody").innerText = db.error;
@@ -24,7 +25,7 @@ window.onload = function(){
       );
     load(index==-1?0:index)
   });
-  pwa();
+  //pwa();
 }
 
 function GET(){

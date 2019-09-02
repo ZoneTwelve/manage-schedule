@@ -5,7 +5,7 @@ const filesToCache = [
   '/src/css/root/index.css',
   '/src/js/root/index.js',
   '/src/images/favicon.png',
-  '/favicon.ico',
+  '/favicon.ico'
 ];
 
 // install

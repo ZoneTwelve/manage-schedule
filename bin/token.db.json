@@ -1,1 +1,1 @@
-[{"name":"admin","note":"administrator","allow":[],"deny":[],"limit":-1},{"name":"ZAA1Do6ZyFsbHfrH-marry","note":"結婚數","allow":["桃園市各區結婚統計_107年結婚對數"],"deny":[],"limit":-1}]
+[{"name":"admin","note":"administrator","allow":[],"deny":[],"limit":-1},{"name":"ZAA1Do6ZyFsbHfrH-marry","note":"結婚數","allow":["桃園市各區結婚統計_107年結婚對數"],"deny":[],"limit":-1},{"name":"wjbFbapNQglqbgpf-bank","note":"bank","allow":["金融機構基本資料查詢"],"deny":[],"limit":-1}]
