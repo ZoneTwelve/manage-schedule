@@ -1,1 +1,3 @@
-[{"name":"HOorIIBcbLMWBBMz","note":"","allow":[],"deny":[],"limit":-1},{"name":"UbxKKgPHjSNkmS2X","note":"hello","allow":["2019_8月管理員班表","金融機構基本資料查詢"],"deny":[],"limit":4}]
+[
+  {"name":"admin","note":"administrator","allow":[],"deny":[],"limit":-1}
+]

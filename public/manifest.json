@@ -1,0 +1,18 @@
+{
+  "name":"資料表快速查詢工具",
+  "short_name":"資料查詢",
+  "icons":[{
+      "src":"src/images/favicon.png",
+      "type":"image/png",
+      "sizes":"256x256"
+  }],
+  "background_color":"#ff8000",
+  "theme_color":"#fff",
+  "start_url":"/",
+  "scope":".",
+  "display":"fullscreen",
+  "orientation":"portrait-primary",
+  "description":"資料表查看與管理授權工具",
+  "dir":"ltr",
+  "lang":"zh-Hant-TW"
+}
