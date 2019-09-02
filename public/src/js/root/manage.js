@@ -13,6 +13,7 @@ window.onload = function(){
 
 function System(){
   this.list = [];
+  this.users = [];
   this.element = new Object();
 }
 
@@ -26,6 +27,7 @@ System.prototype.setup = function(){
 }
 
 System.prototype.apply = function(){
+
   var defaultOption = "<option value='資料表, 請選擇資料'>請選擇資料表</option>";
   
   //setup delete's selector options
@@ -172,6 +174,45 @@ System.prototype.delkey = function(){
   return false;
 }
 
+System.prototype.modifykey = function(){
+  if(this.token.value==""){
+    alert("請選擇 QRCode");
+    return false;
+  }
+  if(!confirm("確定要修改嗎? 若資料表填選錯誤, 可能造成資訊洩漏."))
+    return false;
+  var formData = new FormData();
+  let allow = system.element.modifykey.querySelector('[name="absel"]').innerText.replace(/\n/g, ",");
+  let deny = system.element.modifykey.querySelector('[name="dbsel"]').innerText.replace(/\n/g, ",");
+
+  let option = {
+    note:this.note.value,
+    limit:this.limit.value,
+    allow:allow,
+    deny:deny
+  };
+  let params = [];
+  for(let obj in (option))
+    params.push(`${encodeURIComponent(obj)}=${encodeURIComponent(option[obj])}`);
+  console.log(params);
+  var http = new XMLHttpRequest();
+  http.open('PUT', "/schedule/access/"+this.token.value, true);
+
+  //Send the proper header information along with the request
+  http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+  http.onreadystatechange = function() {//Call a function when the state changes.
+      if(http.readyState==4) {
+          let json = JSON.parse(http.responseText);
+          system.apply();
+          alert(json.error||(`${location.origin}/login/${json.name}`));
+          //alert(http.responseText);
+      }
+  }
+  http.send(params.join("&"));
+  return false;
+}
+
 function createElement(tag, content = {}, setting = {}){
   let el = document.createElement(tag);
   for(let set of Object.keys(setting)){
@@ -228,14 +269,20 @@ function uploadFiles(method, url, file, callback) {
 function setup_qrcode(){
   var qrcon = document.querySelector("#qrcode-container");
   request("access", (result)=>{
+    system.users = result;
     console.log(result);
     qrcon.innerHTML="";
     system.element.delkey.token.innerHTML = "";
+    system.element.modifykey.token.innerHTML = "";
+    system.element.modifykey.token.onchange = function(){};
     //for(let obj of result){
     if(result.length==0){
       qrcon.appendChild(createElement("p", {innerText:"目前還沒生成 QRCode"}));
-      system.element.delkey.token.appendChild(createElement("option", {value:"", innerText:"沒有"}));
+      system.element.delkey.token.appendChild(createElement("option", {value:"", innerText:"沒有 QRCode"}));
+      system.element.modifykey.token.appendChild(createElement("option", {value:"", innerText:"沒有 QRCode"}))
+      return false;
     }
+    system.element.modifykey.token.appendChild(createElement("option",{value:"", innerText:"請選擇 QRCode"}))
     for(var i=0;i<result.length;i++){
       let obj = result[i];
       let url = `${location.origin}/login/${obj.name}`;
@@ -254,13 +301,45 @@ function setup_qrcode(){
 
       qrcon.appendChild(con);
 
-
+      
 
       //delete token selector
       let opt = createElement("option", {value:obj.name, innerText:i+" - "+(obj.note||"沒有備註")});
       system.element.delkey.token.appendChild(opt);
+
+      let optm = createElement("option", {value:obj.name, innerText:`${i} - ${(obj.note||"沒有備註")}`});
+      system.element.modifykey.token.appendChild(optm);
+
     }
+    system.element.modifykey.token.onchange = applyModifyKey;
   });
+}
+
+function applyModifyKey(){
+  let user = system.users.find(v=>v.name===this.value);
+  if(user==undefined){
+    system.element.modifykey.limit.value = "";
+    system.element.modifykey.note.value = "";
+    for(let n=0,sels=system.element.modifykey.querySelectorAll('.container>div>ul[name]');n<sels.length;n++)
+      sels[n].innerHTML="";
+    return false;
+  }
+  let opts = [system.list.filter(v=>user.allow.indexOf(v)==-1),
+              system.list.filter(v=>user.allow.indexOf(v)!=-1),
+              system.list.filter(v=>user.deny.indexOf(v)==-1),
+              system.list.filter(v=>user.deny.indexOf(v)!=-1)]
+  for(let n=0,sels=system.element.modifykey.querySelectorAll('.container>div>ul[name]');n<sels.length;n++){
+    sels[n].innerHTML = "";
+    system.element.modifykey.limit.value = user.limit;
+    system.element.modifykey.note.value = user.note;
+    for(let val of opts[n]){
+      //ausel.appendChild(createElement("li", {onclick:this.putkey, innerText:val, db:absel}));
+      sels[n].appendChild(createElement("li", {onclick:system.putkey, innerText:val, db:sels[((n+1)%2)+(~~(n/2)*2)]}));
+      //console.log(n, sels[n], val);
+    }
+    console.log(n, sels[n], opts[n]);
+  }
+  return false;
 }
 
 function copyThisToken(){

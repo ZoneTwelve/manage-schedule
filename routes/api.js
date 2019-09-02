@@ -27,8 +27,6 @@ router.get('/list', checkaccess, (req, res)=>{
 });
 
 // feature: restrict access
-
-
 router.get("/login", (req, res)=>{
   res.render("login", {message:""});
 });
@@ -60,7 +58,7 @@ router.get("/login/:token", (req, res, next)=>{
   //res.status(401).send({error:"login fail"});
 }, manageLoginToken);
 
-
+//need the protaction from CSRF
 router.post("/login", (req ,res, next)=>{
   if(typeof req.body.pwd==="string"){
     res.usrtoken = req.body.pwd;
@@ -74,10 +72,10 @@ function manageLoginToken(req, res){
   manage.reloadToken();
   let user = manage.find(res.usrtoken);
   if(!user.error&&user.note!=="administrator"){
-    if(user.limit>0&&!res.allowSess)
-      user.limit--;
     if(user.limit==0&&!res.allowSess)
       return res.status(403).send({error:"這個連結已經失效了, 若有需求請聯絡管理單位."});
+    if(user.limit>0&&!res.allowSess)
+      user.limit--;
     req.session.info = {
       user:[user.name],
       access:[],
@@ -130,7 +128,29 @@ router.post("/access", checkaccess, (req, res)=>{
 });
 
 router.put("/access/:token", (req, res)=>{
+  req.body.limit = parseInt(req.body.limit);
+  let usr = isuser(req.session);
+  if(usr.error)
+    return res.status(403).send(usr);
 
+  if(typeof req.params.token=="string"&&
+     typeof req.body.note=="string"&&
+     typeof req.body.allow=="string"&&
+     typeof req.body.deny=="string"&&
+     !isNaN(req.body.limit)){
+    
+    let user = manage.modifyusr({
+      token:req.params.token,
+      note:req.body.note,
+      allow:req.body.allow.split(",").filter(v=>v.length>0),
+      deny:req.body.deny.split(",").filter(v=>v.length>0),
+      limit:req.body.limit
+    });
+    return res.send(user);
+  }
+
+
+  return res.status(500).send({error:"ya!"});
 });
 
 // delete access token

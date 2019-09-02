@@ -173,6 +173,19 @@ main.prototype.rmuser = function(token){
   //return index==-1?{error:"this key is not defined"}:{message:`token been remove, token: ${token}`};
 }
 
+main.prototype.modifyusr = function({token, note, allow, deny, limit}){
+  this.users = this.loadToken();
+  let usr = this.users.find(v=>v.name==token);
+  if(usr!=undefined){
+    usr.note = note;
+    usr.allow = allow;
+    usr.deny = deny;
+    usr.limit = limit;
+    this.storageToken();
+  }
+  return usr||{error:"not find the user"};
+}
+
 main.prototype.storageToken = function(){
   fs.writeFileSync(this.dbpath, JSON.stringify(this.users));
 }

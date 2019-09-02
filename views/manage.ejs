@@ -83,6 +83,32 @@
     <select name="token"></select>
     <input type="submit" value="刪除">
   </form>
+  <hr>
+  <h2>修改 QRCode</h2>
+  <form name="modifykey">
+    <select name="token"></select>
+    <p>備註: <input type="text" name="note" placeholder="備註"></p>
+    <p>存取上限(-1為無限制): <input type="number" name="limit" value="-1" placeholder="存取上限(-1為無限>制)"></p>
+    <div id="mkselector" class="container">
+      <h3>允許查看的資料(不選就都可以查看)</h3>
+      <div class="container">
+        <h4>未選取</h4>
+        <ul class="ul-selector notdeny" name="ausel"></ul>
+        <h4>已選取</h4>
+        <ul class="ul-selector allow" name="absel"></ul>
+      </div>
+      <br>
+      <h3>禁止查看的資料(不選擇則不會禁止)</h3>
+      <div class="container">
+        <h4>未選取</h4>
+        <ul class="ul-selector allow" name="dusel"></ul>
+        <h4>已選取</h4>
+        <ul class="ul-selector deny" name="dbsel"></ul>
+      </li>
+      <input type="hidden" name="allow"><input type="hidden" name="deny">
+      <input type="submit" value="修改金鑰">
+    </div>
+  </form>
 </div>
 <div style="height:100px;"></div>
 <script type="text/javascript" src="/src/js/lib/jquery-3.4.1.min.js"></script>
