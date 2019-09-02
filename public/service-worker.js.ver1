@@ -1,0 +1,7 @@
+const fileToCache = [
+  "/",
+  "/src/css/root/index.css",
+  "/src/js/root/index.js",
+  "/favicon.ico",
+  "/src/images/favicon.png"
+];

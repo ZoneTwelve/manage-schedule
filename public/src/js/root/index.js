@@ -25,7 +25,7 @@ window.onload = function(){
       );
     load(index==-1?0:index)
   });
-  //pwa();
+  pwa();
 }
 
 function GET(){
@@ -93,7 +93,18 @@ function request(target, callback){
   xhttp.send();
 }
 
-/*
+function pwasetup(){
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/service-worker.js')
+          .then((reg) => {
+            console.log('Service worker registered.', reg);
+          });
+    });
+  }
+}
+
+// *
 //PWA
 function pwa(){
   if ('serviceWorker' in navigator) {
@@ -117,4 +128,4 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
     console.log('now fetch!');
 });
-*/
+// */
