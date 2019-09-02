@@ -6,7 +6,7 @@
       "type":"image/png",
       "sizes":"256x256"
   }],
-  "background_color":"#ff8000",
+  "background_color":"#009100",
   "theme_color":"#fff",
   "start_url":"/",
   "scope":".",

@@ -23,7 +23,8 @@ window.onload = function(){
         createElement("option", {value:option, innerText:option})
       );
     load(index==-1?0:index)
-  })
+  });
+  pwa();
 }
 
 function GET(){
@@ -90,3 +91,28 @@ function request(target, callback){
   xhttp.open("GET", `/schedule/${target}`, true);
   xhttp.send();
 }
+
+
+//PWA
+function pwa(){
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js')
+    .then(reg => console.log('SW registered!', reg))
+    .catch(err => console.log('Error!', err));
+  }
+}
+
+// install
+self.addEventListener('install', event => {
+    console.log('installing…');
+});
+
+// activate
+self.addEventListener('activate', event => {
+    console.log('now ready to handle fetches!');
+});
+
+// fetch
+self.addEventListener('fetch', event => {
+    console.log('now fetch!');
+});
